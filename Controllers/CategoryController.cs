@@ -61,11 +61,17 @@ namespace AdminBlog.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(Request.Form.Files.Count() != 0)
+                //Save file to vernumBlog application if the file is given
+                if (Request.Form.Files.Count() != 0)
                 {
+                    
                     var file = Request.Form.Files.First();
+
+                    //savePath has to be changed to vernumBlog solution folder in the computer
                     string savePath = Path.Combine("C:", "Users", "cemoz", "OneDrive",
                         "Masaüstü", "Programlama", "ASP.NET", "VernumBlog", "wwwroot", "img");
+
+                    //In order to avoid overriding files with same names. We set file names to creation date
                     var fileName = $"{DateTime.Now:MMddHHmmss}.{file.FileName.Split(".").Last()}";
                     var fileUrl = Path.Combine(savePath, fileName);
                     using (var fileStream = new FileStream(fileUrl, FileMode.Create))
@@ -79,11 +85,13 @@ namespace AdminBlog.Controllers
                 {
                     Category.Posts = await _db.Posts.Where(p => p.categoryId == Category.Id).ToListAsync();
                 }
-                
+
+                //If its a new category create new category
                 if (Category.Id == 0)
                 {
                     await _db.Categories.AddAsync(Category);
                 }
+                //Otherwise update it
                 else
                 {
                     _db.Categories.Update(Category);
@@ -98,6 +106,8 @@ namespace AdminBlog.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            // When deleting a category erase its image file. 
+            // We delete all of its posts as well as their images files.
 
             var fetched = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
             if (fetched == null)
@@ -105,6 +115,7 @@ namespace AdminBlog.Controllers
                 return Json(new { success = false, message = "404 category not found" });
             }
 
+            //savePath has to be changed to vernumBlog solution folder in the computer
             string folder = Path.Combine("C:", "Users", "cemoz", "OneDrive",
                         "Masaüstü", "Programlama", "ASP.NET", "VernumBlog", "wwwroot", "img");
 
@@ -112,7 +123,6 @@ namespace AdminBlog.Controllers
 
             //Get image path of posts in current category 
             List<string> postfilePaths = categoryPosts.Select(p => p.imagePath).ToList();
-            //postfilePaths.ForEach(file => file = Path.Combine(folder, file));
 
             //Added imagePath of the current category for convenience
             postfilePaths.Add(fetched.imagePath);

@@ -40,6 +40,8 @@ namespace AdminBlog.Controllers
         public async Task<IActionResult> Upsert(int? id)
         {
             Post = new Post();
+
+            //setting the ViewBag for dropdownlist on upsert.cshtml
             ViewBag.Categories = _db.Categories.Select(c =>
                new SelectListItem
                {
@@ -82,10 +84,12 @@ namespace AdminBlog.Controllers
         {
             if (ModelState.IsValid)
             {
-                //TODO: Add security controls
-                if(Request.Form.Files.Count() != 0)
+                //Save file to vernumBlog application, if the file is given
+                if (Request.Form.Files.Count() != 0)
                 {
                     var file = Request.Form.Files.First();
+
+                    //savePath has to be changed to vernumBlog solution folder in the computer
                     string savePath = Path.Combine("C:", "Users", "cemoz", "OneDrive",
                         "Masaüstü", "Programlama", "ASP.NET", "VernumBlog", "wwwroot", "img");
                     var fileName = $"{DateTime.Now:MMddHHmmss}.{file.FileName.Split(".").Last()}";
@@ -97,10 +101,12 @@ namespace AdminBlog.Controllers
                     Post.imagePath = fileName;
                 }
                 
+                //If its a new post create new post
                 if (Post.Id == 0)
                 {
                     _db.Posts.Add(Post);
                 }
+                //Otherwise update it
                 else
                 {
                     _db.Posts.Update(Post);
@@ -115,12 +121,15 @@ namespace AdminBlog.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            // When deleting a post erase its image file as well. 
+
             var fetchedPost = await _db.Posts.FirstOrDefaultAsync(p => p.Id == id);
             if (fetchedPost == null)
             {
                 return Json(new { succes = false, message = "404 post not found" });
             }
 
+            //folder has to be changed to vernumBlog solution folder in the computer
             string folder = Path.Combine("C:", "Users", "cemoz", "OneDrive",
                         "Masaüstü", "Programlama", "ASP.NET", "VernumBlog", "wwwroot", "img");
             string filename = fetchedPost.imagePath;
