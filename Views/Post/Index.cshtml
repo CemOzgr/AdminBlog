@@ -1,0 +1,28 @@
+﻿<br />
+
+<div class="container row p-0 m-0">
+    <div class="col-6">
+        <h2 class="text-info">Posts</h2>
+    </div>
+    <div class="col-3 offset-3">
+        <a asp-action="Upsert" asp-controller="Post" class="btn btn-info form-control text-white">
+            Add a New Post
+        </a>
+    </div>
+    <div class="col-12 border p-3">
+        <table id="DT_load" class="table table-striped table-bordered" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>CreationDate</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/postList.js"></script>
+}
+
